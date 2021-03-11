@@ -34,8 +34,22 @@ export class Login extends React.Component<ILoginProps, ILoginState>{
     }
 
     private async handleSubmit(event: SyntheticEvent) {
+        this.setState({loginAttempted: true})
         event.preventDefault();
-        console.log(this.state)
+        const authResponse = await this.props.authService.login(
+            this.state.userName,
+            this.state.password
+        )
+        if (authResponse) {
+            console.log(authResponse)
+            this.setState({
+                isLoggedIn: true
+            })
+        } else {
+            this.setState({
+                isLoggedIn: false
+            })
+        }
     }
 
 
@@ -43,6 +57,15 @@ export class Login extends React.Component<ILoginProps, ILoginState>{
 
 
     render() {
+        let loginLabel;
+        if (this.state.loginAttempted) {
+            if (this.state.isLoggedIn) {
+                loginLabel = <label>Login succesfull</label>
+            } else {
+                loginLabel = <label>Login failed</label>
+            }
+        }
+
         return (
             <div>
                 <h2>Please login:</h2>
@@ -51,6 +74,7 @@ export class Login extends React.Component<ILoginProps, ILoginState>{
                     <input name='password' type='password' value={this.state.password} onChange={e => this.setPassword(e)} /><br />
                     <input type='submit' value='Login' />
                 </form>
+                {loginLabel}
             </div>
         )
     }
